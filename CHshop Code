@@ -9,7 +9,7 @@ Location's description:
 	$mod_info[0] = 'CHshop'
 	!0=mod name, saved to $mod_name[i] array
 	
-	$mod_info[1] = '00401'
+	$mod_info[1] = '00500'
 	!1=mod version
 	!this will be displayed as version 1.2, fix3.
 	!if you input 40500, will be showen as version 4.5
@@ -41,7 +41,7 @@ Location's description:
 
 	
 	*clr & cla
-	'<b>Version 0.4 Patch 1: Universal Bedroom Support + Dorm Temp Fix</b>'
+	'<b>Version 0.5: Tattoo & Piercings Addition</b>'
 	*nl
 	act 'Return': gt 'mod_setting'
 	
@@ -55,13 +55,24 @@ Location's description:
 	if func('homes_properties', 'is_current_home', $curloc) and $locclass = 'bedr' and cheatVars['cheatsp'] = 1:
 		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_selection'', ''start''">Clothes Shop</a> MOD</b>'
 		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''start''">Cosmetic Tattoo Shop</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'	
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_piercing'', ''start''">Tattoo & Piercings</a> MOD</b>'	
 	end
 	
+	! This is a temporary fix because the University Dorm does not have a bedr location class
 	if $loc = 'uni_dorm' and $curloc = 'uni_dorm' and $loc_arg = 'dorm_room' and cheatVars['cheatsp'] = 1:
 		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_selection'', ''start''">Clothes Shop</a> MOD</b>'
 		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''start''">Cosmetic Tattoo Shop</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'	
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_piercing'', ''start''">Tattoo & Piercings</a> MOD</b>'
+	end
+	
+	! This is a temporary fix because the therapist hotel room does not have a bedr location class
+	if $loc = 'HotelRoom' and $curloc = 'HotelRoom' and $loc_arg = 'therapist' and cheatVars['cheatsp'] = 1:
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_selection'', ''start''">Clothes Shop</a> MOD</b>'
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''start''">Cosmetic Tattoo Shop</a> MOD</b>'
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_piercing'', ''start''">Tattoo & Piercings</a> MOD</b>'
 	end
 	
 	if $ARGS[0] = 'permanent':
@@ -71,6 +82,802 @@ Location's description:
 	end
 
 ------------ End of location: "mod_CHshop" ------------
+
+Location: "mod_CHshop_piercing"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Location's description:
+
+	if $ARGS[0] = 'count':
+		!!Counting the tattoos and piercings just in case
+	
+		gs 'tattoo_management', 'count'
+		gs 'piercing_management', 'count'
+	
+		exit
+	end
+	
+	if $ARGS[0] = 'start':
+		menu_off = 0
+		$location_type = 'public_indoors'
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'start'
+		gs 'stat'
+		gs 'themes', 'indoors'
+	
+		'<center><b>Tattoo & Piercing Salon</b></center>'
+	
+		act 'Leave':
+			gs 'mod_CHshop_piercing', 'count'
+			$menu_loc = $shopreturn
+			$menu_arg = $shoparg
+			killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+		end
+		
+		if pcs_tattoos['total'] > 0:	act 'Remove all tattoos':		gs 'tattoo_management', 'full_reset'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['face'] > 0:		act 'Remove face tattoo':		gs 'tattoo_management', 'remove', 'face'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['lip'] > 0:		act 'Remove lip tattoo':		gs 'tattoo_management', 'remove', 'lip'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['neck'] > 0:		act 'Remove neck tattoo':		gs 'tattoo_management', 'remove', 'neck'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['back'] > 0:		act 'Remove back tattoo':		gs 'tattoo_management', 'remove', 'back'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['shoulder'] > 0:	act 'Remove shoulder tattoo':	gs 'tattoo_management', 'remove', 'shoulder'& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['breast'] > 0:	act 'Remove breast tattoo':		gs 'tattoo_management', 'remove', 'breast'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['under'] > 0:	act 'Remove under tattoo':		gs 'tattoo_management', 'remove', 'under'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['chest'] > 0:	act 'Remove chest tattoo':		gs 'tattoo_management', 'remove', 'chest'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['side'] > 0:		act 'Remove side tattoo':		gs 'tattoo_management', 'remove', 'side'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['belly'] > 0:	act 'Remove belly tattoo':		gs 'tattoo_management', 'remove', 'belly'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['arm'] > 0:		act 'Remove arm tattoo':		gs 'tattoo_management', 'remove', 'arm'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['wrist'] > 0:	act 'Remove wrist tattoo':		gs 'tattoo_management', 'remove', 'wrist'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['hand'] > 0:		act 'Remove hand tattoo':		gs 'tattoo_management', 'remove', 'hand'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['leg'] > 0:		act 'Remove leg tattoo':		gs 'tattoo_management', 'remove', 'leg'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['ankle'] > 0:	act 'Remove ankle tattoo':		gs 'tattoo_management', 'remove', 'ankle'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['tramp'] > 0:	act 'Remove tramp tattoo':		gs 'tattoo_management', 'remove', 'tramp'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['ass'] > 0:		act 'Remove ass tattoo':		gs 'tattoo_management', 'remove', 'ass'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_tattoos['pussy'] > 0:	act 'Remove pussy tattoo':		gs 'tattoo_management', 'remove', 'pussy'	& gt 'mod_CHshop_piercing', 'start'
+		
+		if pcs_piercings['total'] > 0:	act 'Remove all piercings':		gs 'piercing_management', 'full_reset'			& gt 'mod_CHshop_piercing', 'start'
+		if pcs_piercings['navel'] > 0:	act 'Remove navel piercing':	gs 'piercing_management', 'remove', 'navel'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_piercings['brow'] > 0:	act 'Remove brow piercing':		gs 'piercing_management', 'remove', 'brow'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_piercings['lip'] > 0:	act 'Remove lip piercing':		gs 'piercing_management', 'remove', 'lip'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_piercings['nipples'] > 0:act 'Remove nipple piercings':	gs 'piercing_management', 'remove', 'nipples'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_piercings['nose'] > 0:	act 'Remove nose piercing':		gs 'piercing_management', 'remove', 'nose'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_piercings['pussy'] > 0:	act 'Remove labia piercing':	gs 'piercing_management', 'remove', 'pussy'		& gt 'mod_CHshop_piercing', 'start'
+		if pcs_piercings['tongue'] > 0:	act 'Remove tongue piercing':	gs 'piercing_management', 'remove', 'tongue'	& gt 'mod_CHshop_piercing', 'start'
+		if pcs_piercings['ears'] > 0:	act 'Remove ear piercings':		gs 'piercing_management', 'remove', 'ears'		& gt 'mod_CHshop_piercing', 'start'
+	
+		gs 'mod_CHshop_piercing', 'shop_menu'
+	end
+	
+	if $ARGS[0] = 'shop_menu':
+		$temp_table = '<center><table border=1>'
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<th>'
+		$temp_table +=			'View tattoos'
+		$temp_table +=		'</th>'
+		$temp_table +=		'<th>'
+		$temp_table +=			'View tattoos'
+		$temp_table +=		'</th>'
+		$temp_table +=		'<th>'
+		$temp_table +=			'View piercings'
+		$temp_table +=		'</th>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_hand''">Hand - 7,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_lip''">Lip - 5,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		if pcs_piercings['ears'] = 0:
+			$temp_table +=		'<a href="exec: salon_temp_state = 0 & gt ''mod_CHshop_piercing'', ''piercing_ears''">Ear - 3,000 <b>₽</b></a>'
+		else
+			$temp_table +=		'<a href="exec: salon_temp_state = 1 & gt ''mod_CHshop_piercing'', ''piercing_ears''">Ear - 1,000 <b>₽</b></a>'
+		end
+		$temp_table +=		'</td>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_wrist''">Wrist - 7,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_belly''">Belly - 10,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		if pcs_piercings['nose'] = 0:
+			$temp_table +=		'<a href="exec: salon_temp_state = 0 & gt ''mod_CHshop_piercing'', ''piercing_nose''">Nose - 5,000 <b>₽</b></a>'
+		else
+			$temp_table +=		'<a href="exec: salon_temp_state = 1 & gt ''mod_CHshop_piercing'', ''piercing_nose''">Nose - 2,000 <b>₽</b></a>'
+		end
+		$temp_table +=		'</td>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_ankle''">Ankle - 8,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_ass''">Ass - 10,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		if pcs_piercings['brow'] = 0:
+			$temp_table +=		'<a href="exec: salon_temp_state = 0 & gt ''mod_CHshop_piercing'', ''piercing_brow''">Eyebrow - 5,000 <b>₽</b></a>'
+		else
+			$temp_table +=		'<a href="exec: salon_temp_state = 1 & gt ''mod_CHshop_piercing'', ''piercing_brow''">Eyebrow - 2,000 <b>₽</b></a>'
+		end
+		$temp_table +=		'</td>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_arm''">Arm - 8,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_face''">Face - 10,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		if pcs_piercings['lip'] = 0:
+			$temp_table +=		'<a href="exec: salon_temp_state = 0 & gt ''mod_CHshop_piercing'', ''piercing_lip''">Lip - 6,000 <b>₽</b></a>'
+		else
+			$temp_table +=		'<a href="exec: salon_temp_state = 1 & gt ''mod_CHshop_piercing'', ''piercing_lip''">Lip - 3,000 <b>₽</b></a>'
+		end
+		$temp_table +=		'</td>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_shoulder''">Shoulder - 8,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_chest''">Chest - 12000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		if pcs_piercings['tongue'] = 0:
+			$temp_table +=		'<a href="exec: salon_temp_state = 0 & gt ''mod_CHshop_piercing'', ''piercing_tongue''">Tongue - 7,000 <b>₽</b></a>'
+		else
+			$temp_table +=		'<a href="exec: salon_temp_state = 1 & gt ''mod_CHshop_piercing'', ''piercing_tongue''">Tongue - 4,000 <b>₽</b></a>'
+		end
+		$temp_table +=		'</td>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_neck''">Neck - 8,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_tramp''">Tramp stamp - 12,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		if pcs_piercings['navel'] = 0:
+			$temp_table +=		'<a href="exec: salon_temp_state = 0 & gt ''mod_CHshop_piercing'', ''piercing_navel''">Navel - 8,000 <b>₽</b></a>'
+		else
+			$temp_table +=		'<a href="exec: salon_temp_state = 1 & gt ''mod_CHshop_piercing'', ''piercing_navel''">Navel - 5,000 <b>₽</b></a>'
+		end
+		$temp_table +=		'</td>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_back''">Back - 10,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_under''">Under breast - 12,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		if pcs_piercings['nipples'] = 0:
+			$temp_table +=		'<a href="exec: salon_temp_state = 0 & gt ''mod_CHshop_piercing'', ''piercing_nipples''">Nipple - 10,000 <b>₽</b></a>'
+		else
+			$temp_table +=		'<a href="exec: salon_temp_state = 1 & gt ''mod_CHshop_piercing'', ''piercing_nipples''">Nipple - 6,000 <b>₽</b></a>'
+		end
+		$temp_table +=		'</td>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_leg''">Legs - 10,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_breast''">Breasts - 15,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		if pcs_piercings['pussy'] = 0:
+			$temp_table +=		'<a href="exec: salon_temp_state = 0 & gt ''mod_CHshop_piercing'', ''piercing_pussy''">Pussy - 25,000 <b>₽</b></a>'
+		else
+			$temp_table +=		'<a href="exec: salon_temp_state = 1 & gt ''mod_CHshop_piercing'', ''piercing_pussy''">Pussy - 10,000 <b>₽</b></a>'
+		end
+		$temp_table +=		'</td>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table +=	'<tr>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_side''">Side - 12,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=			'<a href="exec: gt ''mod_CHshop_piercing'', ''tattoo_pussy''">Pubic - 20,000 <b>₽</b></a>'
+		$temp_table +=		'</td>'
+		$temp_table +=		'<td>'
+		$temp_table +=		'</td>'
+		$temp_table +=	'</tr>'
+	
+		$temp_table += '</table></center>'
+	
+		'<<$temp_table>>'
+		killvar '$temp_table'
+	end
+	
+	
+	
+		!!========================================================================!!
+		!!                                                                        !!
+		!!                               PIERCINGS                                !!
+		!!                                                                        !!
+		!!========================================================================!!
+	
+	
+		!!----- Ears --------------------------------------------------
+	
+	if $ARGS[0] = 'piercing_ears':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'piercing_ears'
+		menu_off = 1
+		gs 'stat'
+	
+		if salon_temp_state = 0 and pcs_piercings['ears'] ! 0:
+			minut += 30
+			salon_temp_state = 1
+			gs 'pain', 1, 'ears', 'pierce'
+		end
+	
+		if shop_display['init'] = 0:
+			gs 'shop_utils', 'init_display', 'ears', 'shop'
+		end
+	
+		gs 'shop_utils', 'display_piercings_grid_shop'
+	
+		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Nose --------------------------------------------------
+	
+	if $ARGS[0] = 'piercing_nose':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'piercing_nose'
+		menu_off = 1
+		gs 'stat'
+	
+		if salon_temp_state = 0 and pcs_piercings['nose'] ! 0:
+			minut += 30
+			salon_temp_state = 1
+			gs 'pain', 1, 'nose', 'pierce'
+		end
+	
+		if shop_display['init'] = 0:
+			gs 'shop_utils', 'init_display', 'nose', 'shop'
+		end
+	
+		gs 'shop_utils', 'display_piercings_grid_shop'
+	
+		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Brow --------------------------------------------------
+	
+	if $ARGS[0] = 'piercing_brow':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'piercing_brow'
+		menu_off = 1
+		gs 'stat'
+	
+		if salon_temp_state = 0 and pcs_piercings['brow'] ! 0:
+			minut += 30
+			salon_temp_state = 1
+			gs 'pain', 1, 'eyebrows', 'pierce'
+		end
+	
+		if shop_display['init'] = 0:
+			gs 'shop_utils', 'init_display', 'brow', 'shop'
+		end
+	
+		gs 'shop_utils', 'display_piercings_grid_shop'
+	
+		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Lip --------------------------------------------------
+	
+	if $ARGS[0] = 'piercing_lip':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'piercing_lip'
+		menu_off = 1
+		gs 'stat'
+	
+		if salon_temp_state = 0 and pcs_piercings['lip'] ! 0:
+			minut += 30
+			salon_temp_state = 1
+			gs 'pain', 1, 'lips', 'pierce'
+		end
+	
+		if shop_display['init'] = 0:
+			gs 'shop_utils', 'init_display', 'lip', 'shop'
+		end
+	
+		gs 'shop_utils', 'display_piercings_grid_shop'
+	
+		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Tongue --------------------------------------------------
+	
+	if $ARGS[0] = 'piercing_tongue':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'piercing_tongue'
+		menu_off = 1
+		gs 'stat'
+	
+		if salon_temp_state = 0 and pcs_piercings['tongue'] ! 0:
+			minut += 30
+			salon_temp_state = 1
+			gs 'pain', 1, 'tongue', 'pierce'
+		end
+	
+		if shop_display['init'] = 0:
+			gs 'shop_utils', 'init_display', 'tongue', 'shop'
+		end
+	
+		gs 'shop_utils', 'display_piercings_grid_shop'
+	
+		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Navel --------------------------------------------------
+	
+	if $ARGS[0] = 'piercing_navel':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'piercing_navel'
+		menu_off = 1
+		gs 'stat'
+	
+		if salon_temp_state = 0 and pcs_piercings['navel'] ! 0:
+			minut += 30
+			salon_temp_state = 1
+			gs 'pain', 1, 'tummy', 'pierce'
+		end
+	
+		if shop_display['init'] = 0:
+			gs 'shop_utils', 'init_display', 'navel', 'shop'
+		end
+	
+		gs 'shop_utils', 'display_piercings_grid_shop'
+	
+		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Nipples --------------------------------------------------
+	
+	if $ARGS[0] = 'piercing_nipples':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'piercing_nipples'
+		menu_off = 1
+		gs 'stat'
+	
+		if salon_temp_state = 0 and pcs_piercings['nipples'] ! 0:
+			minut += 30
+			salon_temp_state = 1
+			gs 'pain', 1, 'nipples', 'pierce'
+		end
+	
+		if shop_display['init'] = 0:
+			gs 'shop_utils', 'init_display', 'nipples', 'shop'
+		end
+	
+		gs 'shop_utils', 'display_piercings_grid_shop'
+	
+		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Pussy --------------------------------------------------
+	
+	if $ARGS[0] = 'piercing_pussy':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'piercing_pussy'
+		menu_off = 1
+		gs 'stat'
+	
+		if salon_temp_state = 0 and pcs_piercings['pussy'] ! 0:
+			minut += 30
+			salon_temp_state = 1
+			gs 'pain', 1, 'pubic', 'pierce'
+		end
+	
+		if shop_display['init'] = 0:
+			gs 'shop_utils', 'init_display', 'pussy', 'shop'
+		end
+	
+		gs 'shop_utils', 'display_piercings_grid_shop'
+	
+		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+	
+		!!========================================================================!!
+		!!                                                                        !!
+		!!                                TATTOOS                                 !!
+		!!                                                                        !!
+		!!========================================================================!!
+	
+	
+		!!----- Ankle --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_ankle':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_ankle'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['ankle'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''ankle_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'ankle', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Arm --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_arm':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_arm'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['arm'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''arm_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'arm', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Ass --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_ass':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_ass'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['ass'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''ass_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'ass', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Back --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_back':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_back'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['back'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''back_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'back', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Belly --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_belly':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_belly'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['belly'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''belly_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'belly', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Breast --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_breast':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_breast'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['breast'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''breast_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'breast', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Chest --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_chest':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_chest'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['chest'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''chest_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'chest', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Face --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_face':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_face'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['face'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''face_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'face', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Hand --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_hand':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_hand'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['hand'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''hand_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'hand', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Leg --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_leg':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_leg'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['leg'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''leg_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'leg', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Lip --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_lip':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_lip'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['lip'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''lip_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'lip', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Neck --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_neck':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_neck'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['neck'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''neck_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'neck', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Pussy --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_pussy':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_pussy'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['pussy'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''pussy_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'pussy', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- shoulder --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_shoulder':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_shoulder'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['shoulder'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''shoulder_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'shoulder', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Side --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_side':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_side'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['side'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''side_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'side', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Tramp --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_tramp':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_tramp'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['tramp'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''tramp_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'tramp', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Under --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_under':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_under'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['under'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''under_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'under', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+		!!----- Wrist --------------------------------------------------
+	
+	if $ARGS[0] = 'tattoo_wrist':
+		gs 'core_library', 'setloc', 'mod_CHshop_piercing', 'tattoo_wrist'
+		menu_off = 1
+		gs 'stat'
+	
+		if pcs_tattoos['wrist'] > 0:
+			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''wrist_image'')>>"></center>'
+			'You already have this tattoo here.'
+		else
+			if shop_display['init'] = 0:
+				gs 'shop_utils', 'init_display', 'wrist', 'shop'
+			end
+	
+			gs 'shop_utils', 'display_tattoos_grid_shop'
+		end
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
+	end
+	
+	
+
+------------ End of location: "mod_CHshop_piercing" ------------
 
 Location: "mod_CHshop_cosmetic"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
