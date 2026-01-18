@@ -1,4 +1,4 @@
-Version 0.4 Patch 1: Universal Bedroom Support + Dorm Temp Fix
+Version 0.5: Tattoo & Piercing addition
 
 
 ----INSTALLATION---- 
@@ -18,11 +18,11 @@ Step 5: Go to your bedroom and new options should appear.
 ----CURRENT FEATURES----
 All clothing, Purse, Shoe and Coat stores currently in game (regardless if they are available to you yet or not)
 Permanent Cosmetic Tattoo's with the ability to remove them and go back to normal makeup.
-Electrolysis (Permanent Hair Removal) including the ability to toggle it back off 
+Electrolysis (Permanent Hair Removal) including the ability to toggle it back off.
+Tattoo and Piercing Shop, including the ability to remove and reset.
 
 ----FUTURE PLANNED FEATURES----
-Piercings shops.
-Tattoo shops.
+More QC for universal bedroom support. So far University Dorm and Therapist HotelRoom fixed. All other "should" be working but I will patch in any others that are broken.
 Future items added to GL that need a visual reference to buy (like new types of clothes)
 
 ----FEATURES NOT PLANNED----
