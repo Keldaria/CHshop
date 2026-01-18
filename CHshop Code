@@ -1,0 +1,920 @@
+Location: "mod_CHshop_setup"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Location's description:
+
+	
+	!input basic mod information here.
+	!this location must be the first one
+	
+	$mod_info[0] = 'CHshop'
+	!0=mod name, saved to $mod_name[i] array
+	
+	$mod_info[1] = '00401'
+	!1=mod version
+	!this will be displayed as version 1.2, fix3.
+	!if you input 40500, will be showen as version 4.5
+	
+	$mod_info[2] = 'Kelly'
+	!2=mod author
+	
+	$mod_info[3] = 'Adds a cheat shop to the pavlovsk bedroom that can be enabled through the cheat menu. The shop does not limit what clothing is available for easy initial game setup. Clothing purchases are still impacted by inhibition and available money but you can modify those using the cheat menu as well. The intent is to make it easier to customize initial game setups'
+	!3=mod description, input a short brief here.
+	
+	if $curloc = 'mod_<<$mod_info[0]>>_setup':
+		usehtml = 1
+		!this will be only showed if you exec mod file. This location should be only called by gs, so this line will not trigger on normal mod playing
+		'<center><h1><font color=red>ACCESS DENIED</font></h1></center>'
+		'<<$mod_info[0]>> is a mod for <b>Girl Life - English Community Version</b>, and can not be played individually.'
+		''
+		'You can find the main game in <a href="https://www.tfgamessite.com/index.php?module=viewgame&id=597">Tfgames site</a> (external link)'
+		''
+		'Our forum: <a href="https://tfgamessite.com/phpbb3/viewforum.php?f=70">Tfgames site</a> (external link)'
+	end
+	
+	
+
+------------ End of location: "mod_CHshop_setup" ------------
+
+Location: "mod_CHshop_readme"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Location's description:
+
+	
+	*clr & cla
+	'<b>Version 0.4 Patch 1: Universal Bedroom Support + Dorm Temp Fix</b>'
+	*nl
+	act 'Return': gt 'mod_setting'
+	
+
+------------ End of location: "mod_CHshop_readme" ------------
+
+Location: "mod_CHshop"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Location's description:
+
+	if func('homes_properties', 'is_current_home', $curloc) and $locclass = 'bedr' and cheatVars['cheatsp'] = 1:
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_selection'', ''start''">Clothes Shop</a> MOD</b>'
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''start''">Cosmetic Tattoo Shop</a> MOD</b>'
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'	
+	end
+	
+	if $loc = 'uni_dorm' and $curloc = 'uni_dorm' and $loc_arg = 'dorm_room' and cheatVars['cheatsp'] = 1:
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_selection'', ''start''">Clothes Shop</a> MOD</b>'
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''start''">Cosmetic Tattoo Shop</a> MOD</b>'
+		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'	
+	end
+	
+	if $ARGS[0] = 'permanent':
+		$cheatmenu['table_start']
+		'Cheat Shop: <a href="exec:					cheatVars[''cheatsp'']			= iif(cheatVars[''cheatsp''], 0, 1)				& dynamic $cheatmenu[$cheatmenu[''this_menu'']]"><<iif(cheatVars[''cheatsp'']				, ''Enabled'', ''Disabled'')>></a>'
+		$cheatmenu['table_end']
+	end
+
+------------ End of location: "mod_CHshop" ------------
+
+Location: "mod_CHshop_cosmetic"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Location's description:
+
+	if $ARGS[0] = 'start':
+		*clr & cla
+		gs 'core_library', 'setloc', 'shop_CHshop', 'start'
+		'<br>Currently there are five levels of cosmetic tattoos: light, vibrant, sultry, professional and celebrity.<br>Please keep in mind that these procedures are permanent.<br>Also, be aware that after procedure using regular cosmetics will be difficult.</b>'
+	
+		act 'Return':
+			$menu_loc = $shopreturn
+			$menu_arg = $shoparg
+			killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+		end
+		if cosmetic_tattoo > 0:
+			act 'Remove cosmetic tattoo':
+				killvar 'cosmetic_tattoo'
+				pcs_makeup = 1
+				gs 'stat'
+				gt 'mod_CHshop_cosmetic', 'start' 
+			end
+		end
+		if cosmetic_tattoo < 1:
+			act 'Get light cosmetic tattoo':
+				cosmetic_tattoo = 1
+				gs 'stat'
+				gt 'mod_CHshop_cosmetic', 'start' 
+			end
+		end
+		if cosmetic_tattoo < 2:
+			act 'Get vibrant cosmetic tattoo':
+				cosmetic_tattoo = 2
+				gs 'stat'
+				gt 'mod_CHshop_cosmetic', 'start' 
+			end
+		end
+		if cosmetic_tattoo < 3:
+			act 'Get sultry cosmetic tattoo':
+				cosmetic_tattoo = 3
+				gs 'stat'
+				gt 'mod_CHshop_cosmetic', 'start' 
+			end
+		end
+		if cosmetic_tattoo < 4:
+			act 'Get professional cosmetic tattoo':
+				cosmetic_tattoo = 4
+				gs 'stat'
+				gt 'mod_CHshop_cosmetic', 'start' 
+			end
+		end
+		if cosmetic_tattoo < 5:
+			act 'Get celebrity(bimbo) cosmetic tattoo':
+				cosmetic_tattoo = 5
+				gs 'stat'
+				gt 'mod_CHshop_cosmetic', 'start' 
+			end
+		end
+	end
+	
+	if $ARGS[0] = 'electrolysis':
+		*clr & cla
+		gs 'core_library', 'setloc', 'shop_CHshop', 'electrolysis'
+		'<br>Electrolysis - laser hair removal of legs and pubic area.</b>'
+	
+		act 'Return':
+			$menu_loc = $shopreturn
+			$menu_arg = $shoparg
+			killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+		end
+		if lashair < 1:
+			act 'Proceed with laser hair removal':
+				gt 'mod_CHshop_cosmetic', 'electrolysisact'
+			end
+		end
+		if lashair = 1:
+			act 'I want to grow hair again':
+				killvar 'lashair'
+				gs 'stat'
+				$menu_loc = $shopreturn
+				$menu_arg = $shoparg
+				killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+			end
+		end
+	end
+	
+	if $ARGS[0] = 'electrolysisact':
+		*clr & cla
+		gs 'core_library', 'setloc', 'shop_CHshop', 'electrolysisact'
+	
+			menu_off = 1
+			pcs_leghair = 0
+			pcs_pubes = 0
+			lashair = 1
+			gs 'stat'
+	
+			'<center><img <<$set_imgh>> src="images/locations/city/residential/clinic/electrolysis.jpg"></center>'
+			'You strip completely and lie down on the table. Over the next few hours, you''re treated by a laser over and over again. When the treatment is finished and you get up from the table, your skin feels silky smooth.'
+	
+			act 'Continue': $menu_loc = $shopreturn & $menu_arg = $shoparg & killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+	end
+
+------------ End of location: "mod_CHshop_cosmetic" ------------
+
+Location: "mod_CHshop_selection"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Location's description:
+
+	if $ARGS[0] = 'start':
+		menu_off = 0
+		gs 'core_library', 'setloc', 'shop_CHshop', 'start'
+		$location_type = 'event'
+		killvar '$locclass'
+		killvar 'clothingfilter'
+		gs 'stat'
+	
+		gs 'themes', 'indoors'
+	
+		'<center><b><font color="maroon">Welcome to the CHEAT store - ALL the Clothes for all your needs</font></b></center>'
+	
+		act 'Leave the store':
+			$shoplocation = ''
+			$menu_loc = $shopreturn
+			$menu_arg = $shoparg
+			killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+			end
+		end
+		act 'Visit dress department':
+			gt 'mod_CHshop_selection', 'dressdpt'
+		end
+	
+		act 'Visit general clothing department':
+			gt 'mod_CHshop_selection', 'clothesdpt'
+		end
+	
+		act 'Visit specialty clothing department':
+			gt 'mod_CHshop_selection', 'specdpt'
+		end
+	
+		act 'Visit panty department':
+			gt 'mod_CHshop_selection', 'pantydpt'
+		end
+	
+		act 'Visit bra department':
+			gt 'mod_CHshop_selection', 'bradpt'
+		end
+	
+		act 'Visit bodysuit department':
+			gt 'mod_CHshop_selection', 'bodysuitdpt'
+		end
+	
+		act 'Visit swimsuit department':
+			gt 'mod_CHshop_selection', 'swimdpt'
+		end
+	
+		act 'Visit shoes department':
+			gt 'mod_CHshop_selection', 'shoedpt'
+		end
+	
+		act 'Visit coat department':
+			gt 'mod_CHshop_selection', 'coatdpt'
+		end
+	
+		act 'Visit purse department':
+			gt 'mod_CHshop_selection', 'pursedpt'
+		end
+	end
+	
+	
+	if $ARGS[0] = 'dressdpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Coco dresses':
+			gs 'shop_utils', 'init_display', 'coco_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Bomba dresses':
+			gs 'shop_utils', 'init_display', 'bomba_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Erotic fetish dresses':
+			gs 'shop_utils', 'init_display', 'eroto_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Exhibitionist dresses':
+			gs 'shop_utils', 'init_display', 'salacious_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Fashionista dresses':
+			gs 'shop_utils', 'init_display', 'fashionista_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Flamingo dresses':
+			gs 'shop_utils', 'init_display', 'flamingos_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View GM dresses':
+			gs 'shop_utils', 'init_display', 'gm_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Moncheri dresses':
+			gs 'shop_utils', 'init_display', 'moncheri_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Moncheri gowns':
+			gs 'shop_utils', 'init_display', 'moncheri_gown', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Patchwork dresses':
+			gs 'shop_utils', 'init_display', 'dolls_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Pussycat dresses':
+			gs 'shop_utils', 'init_display', 'cats_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+		act 'View Scandalicious dresses':
+			gs 'shop_utils', 'init_display', 'scandalicious_dress', 'shop'
+			gt 'mod_CHshop_selection', 'dresses'
+		end
+	end
+	
+	if $ARGS[0] = 'clothesdpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Bomba outfits':
+			gs 'shop_utils', 'init_display', 'bomba_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Burlesque clothing':
+			gs 'shop_utils', 'init_display', 'fancy_burlesque', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Coco outfits':
+			gs 'shop_utils', 'init_display', 'coco_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Erotic fetish outfits':
+			gs 'shop_utils', 'init_display', 'eroto_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Exhibitionist outfits':
+			gs 'shop_utils', 'init_display', 'salacious_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Fashionista outfits':
+			gs 'shop_utils', 'init_display', 'fashionista_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Flamingo clothing':
+			gs 'shop_utils', 'init_display', 'flamingos_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View GM clothing':
+			gs 'shop_utils', 'init_display', 'gm_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Nerdvana outfits':
+			gs 'shop_utils', 'init_display', 'nerdvana_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Patchwork outfits':
+			gs 'shop_utils', 'init_display', 'dolls_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Pussycat outfits':
+			gs 'shop_utils', 'init_display', 'cats_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+		act 'View Scandalicious clothing':
+			gs 'shop_utils', 'init_display', 'scandalicious_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clothes'
+		end
+	end
+	
+	if $ARGS[0] = 'specdpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Danilovich sports clothing':
+			gs 'shop_utils', 'init_display', 'danilovich_outfits', 'shop'
+			gt 'mod_CHshop_selection', 'clo'
+		end
+		act 'View GM office wear':
+			gs 'shop_utils', 'init_display', 'gm_office', 'shop'
+			gt 'mod_CHshop_selection', 'office'
+		end
+		act 'View GM maid outfits':
+			gs 'shop_utils', 'init_display', 'gm_maid', 'shop'
+			gt 'mod_CHshop_selection', 'gm_maid'
+		end
+		act 'View GM server uniforms':
+			gs 'shop_utils', 'init_display', 'gm_server', 'shop'
+			gt 'mod_CHshop_selection', 'gm_server'
+		end
+		act 'View GM school uniforms':
+			gs 'shop_utils', 'init_display', 'gm_school', 'shop'
+			gt 'mod_CHshop_selection', 'school'
+		end
+		act 'View Nerdvana cosplay outfits':
+			gs 'shop_utils', 'init_display', 'nerdvana_cosplay', 'shop'
+			gt 'mod_CHshop_selection', 'cosplay'
+		end
+		act 'View Pregnancy clothes':
+			gs 'shop_utils', 'init_display', 'materinstvo_dress', 'shop'
+			gt 'mod_CHshop_selection', 'mater'
+		end
+		act 'View Erotic stripper clothing':
+			gs 'shop_utils', 'init_display', 'eroto_strip', 'shop'
+			gt 'mod_CHshop_selection', 'strip'
+		end
+	end
+	
+	if $ARGS[0] = 'pantydpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Danilovich sports panties':
+			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			gt 'mod_CHshop_selection', 'panties'
+		end
+		act 'View Erotic panties':
+			gs 'shop_utils', 'init_display', 'eroto', 'shop'
+			gt 'mod_CHshop_selection', 'panties'
+		end
+		act 'View Exhibitionist panties':
+			gs 'shop_utils', 'init_display', 'salacious', 'shop'
+			gt 'mod_CHshop_selection', 'panties'
+		end
+		act 'View Fashionista panties':
+			gs 'shop_utils', 'init_display', 'fashionista', 'shop'
+			gt 'mod_CHshop_selection', 'panties'
+		end
+		act 'View GM panties':
+			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			gt 'mod_CHshop_selection', 'panties'
+		end
+		act 'View Lusso panties':
+			gs 'shop_utils', 'init_display', 'lusso', 'shop'
+			gt 'mod_CHshop_selection', 'panties'
+		end
+		act 'View Pussycat panties':
+			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			gt 'mod_CHshop_selection', 'panties'
+		end
+	end
+	
+	if $ARGS[0] = 'bradpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Danilovich sports bras':
+			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			gt 'mod_CHshop_selection', 'bras'
+		end
+		act 'View Erotic bras':
+			gs 'shop_utils', 'init_display', 'eroto', 'shop'
+			gt 'mod_CHshop_selection', 'bras'
+		end
+		act 'View Exhibitionist bras':
+			gs 'shop_utils', 'init_display', 'salacious', 'shop'
+			gt 'mod_CHshop_selection', 'bras'
+		end
+		act 'View Fashionista bras':
+			gs 'shop_utils', 'init_display', 'fashionista', 'shop'
+			gt 'mod_CHshop_selection', 'bras'
+		end
+		act 'View GM bras':
+			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			gt 'mod_CHshop_selection', 'bras'
+		end
+		act 'View Lusso bras':
+			gs 'shop_utils', 'init_display', 'lusso', 'shop'
+			gt 'mod_CHshop_selection', 'bras'
+		end
+		act 'View Pussycat bras':
+			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			gt 'mod_CHshop_selection', 'bras'
+		end
+	end
+	
+	if $ARGS[0] = 'bodysuitdpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Exhibitionist bodysuits':
+			gs 'shop_utils', 'init_display', 'salacious', 'shop'
+			gt 'mod_CHshop_selection', 'bodysuit'
+		end
+		act 'View Lusso bodysuits':
+			gs 'shop_utils', 'init_display', 'lusso', 'shop'
+			gt 'mod_CHshop_selection', 'bodysuit'
+		end
+		act 'View Moncheri bodysuits':
+			gs 'shop_utils', 'init_display', 'moncheri', 'shop'
+			gt 'mod_CHshop_selection', 'bodysuit'
+		end
+		act 'View Scandalicious bodysuits':
+			gs 'shop_utils', 'init_display', 'scandalicious', 'shop'
+			gt 'mod_CHshop_selection', 'bodysuit'
+		end
+	end
+	
+	if $ARGS[0] = 'swimdpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Allure swimsuits':
+			gs 'shop_utils', 'init_display', 'allure_swimsuit', 'shop'
+			gt 'mod_CHshop_selection', 'swim'
+		end
+		act 'View Allure bikinis':
+			gs 'shop_utils', 'init_display', 'allure_bikinis', 'shop'
+			gt 'mod_CHshop_selection', 'bikinis'
+		end
+		act 'View Danilovich swimwear':
+			gs 'shop_utils', 'init_display', 'danilovich_swimsuit', 'shop'
+			gt 'mod_CHshop_selection', 'swim'
+		end
+		act 'View Nerdvana swimsuits':
+			gs 'shop_utils', 'init_display', 'nerdvana_swimsuit', 'shop'
+			gt 'mod_CHshop_selection', 'swim'
+		end
+		act 'View Nerdvana bikinis':
+			gs 'shop_utils', 'init_display', 'nerdvana_bikinis', 'shop'
+			gt 'mod_CHshop_selection', 'bikinis'
+		end
+		act 'View Scandalicious swimsuits':
+			gs 'shop_utils', 'init_display', 'scandalicious_swimsuit', 'shop'
+			gt 'mod_CHshop_selection', 'swim'
+		end
+		act 'View Scandalicious bikinis':
+			gs 'shop_utils', 'init_display', 'scandalicious_bikinis', 'shop'
+			gt 'mod_CHshop_selection', 'bikinis'
+		end
+	end
+	
+	if $ARGS[0] = 'shoedpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Danilovich exercise shoes':
+			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			gt 'mod_CHshop_selection', 'shoes'
+		end
+		act 'View Erotic fetish shoes':
+			gs 'shop_utils', 'init_display', 'eroto', 'shop'
+			gt 'mod_CHshop_selection', 'shoes'
+		end
+		act 'View GM shoes':
+			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			gt 'mod_CHshop_selection', 'shoes'
+		end
+		act 'View Moncheri shoes':
+			gs 'shop_utils', 'init_display', 'moncheri', 'shop'
+			gt 'mod_CHshop_selection', 'shoes'
+		end
+		act 'View Scandalicious shoes':
+			gs 'shop_utils', 'init_display', 'scandalicious', 'shop'
+			gt 'mod_CHshop_selection', 'shoes'
+		end
+		act 'View Patchwork shoes':
+			gs 'shop_utils', 'init_display', 'dolls', 'shop'
+			gt 'mod_CHshop_selection', 'shoes'
+		end
+		act 'View Pussycat shoes':
+			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			gt 'mod_CHshop_selection', 'shoes'
+		end
+		act 'View Bomba shoes':
+			gs 'shop_utils', 'init_display', 'bomba', 'shop'
+			gt 'mod_CHshop_selection', 'shoes'
+		end
+	end
+	
+	if $ARGS[0] = 'coatdpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Bomba coats':
+			gs 'shop_utils', 'init_display', 'bomba', 'shop'
+			gt 'mod_CHshop_selection', 'coats'
+		end
+		act 'View Danilovich coats':
+			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			gt 'mod_CHshop_selection', 'coats'
+		end
+		act 'View GM coats':
+			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			gt 'mod_CHshop_selection', 'coats'
+		end
+		act 'View Moncheri coats':
+			gs 'shop_utils', 'init_display', 'moncheri', 'shop'
+			gt 'mod_CHshop_selection', 'coats'
+		end
+		act 'View Patchwork coats':
+			gs 'shop_utils', 'init_display', 'dolls', 'shop'
+			gt 'mod_CHshop_selection', 'coats'
+		end
+		act 'View Pussycat coats':
+			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			gt 'mod_CHshop_selection', 'coats'
+		end
+	end
+	
+	if $ARGS[0] = 'pursedpt':
+		cla
+		menu_off = 1
+	
+		act 'Return': gt 'mod_CHshop_selection', 'start'
+	
+		act 'View Bomba purses':
+			gs 'shop_utils', 'init_display', 'bomba', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+		act 'View Coco purses':
+			gs 'shop_utils', 'init_display', 'coco', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+		act 'View Danilovich purses':
+			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+		act 'View Fashionista purses':
+			gs 'shop_utils', 'init_display', 'fashionista', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+		act 'View Flamingo purses':
+			gs 'shop_utils', 'init_display', 'flamingos', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+		act 'View GM purses':
+			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+		act 'View Moncheri purses':
+			gs 'shop_utils', 'init_display', 'moncheri', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+		act 'View Nerdvana purses':
+			gs 'shop_utils', 'init_display', 'nerdvana', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+		act 'View Patchwork purses':
+			gs 'shop_utils', 'init_display', 'dolls', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+		act 'View Pussycat purses':
+			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			gt 'mod_CHshop_selection', 'purses'
+		end
+	end
+	
+	
+	if $ARGS[0] = 'clothes':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'clothes'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing outfits</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'clothesdpt'
+	end
+	
+	if $ARGS[0] = 'dresses':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'dresses'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing dresses</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'dressdpt'
+	end
+	
+	if $ARGS[0] = 'clo':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'clo'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Sportswear - one size fits all</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
+	end
+	
+	if $ARGS[0] = 'office':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'office'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing office clothing</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
+	end
+	
+	if $ARGS[0] = 'gm_maid':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'gm_maid'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing maid outfits</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
+	end
+	
+	if $ARGS[0] = 'gm_server':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'gm_server'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing server uniforms</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
+	end
+	
+	if $ARGS[0] = 'school':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'school'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing school uniforms</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
+	end
+	
+	if $ARGS[0] = 'cosplay':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'cosplay'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing Cosplay Outfits</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
+	end
+	
+	if $ARGS[0] = 'strip':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'strip'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Stripper clothing - for work or the bedroom</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
+	end
+	
+	
+	if $ARGS[0] = 'mater':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'mater'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing materunity clothing</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
+	end
+	
+	if $ARGS[0] = 'shoes':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'shoes'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing shoes</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_shoes_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'shoedpt'
+	end
+	
+	if $ARGS[0] = 'coats':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'coats'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing coats</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_coats_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'coatdpt'
+	end
+	
+	if $ARGS[0] = 'purses':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'purses'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing purses</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_purses_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'pursedpt'
+	end
+	
+	if $ARGS[0] = 'panties':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'panties'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing panties</font></b></center>'
+	
+		gs 'shop_utils', 'display_panties_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'pantydpt'
+	end
+	
+	if $ARGS[0] = 'bras':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'bras'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing bras</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_bras_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'bradpt'
+	end
+	
+	if $ARGS[0] = 'bodysuit':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'bodysuit'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Viewing bodysuits</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_bodysuits_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'bodysuitdpt'
+	end
+	
+	if $ARGS[0] = 'swim':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'swim'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Swimsuits - one size fits all</font></b></center>'
+		*nl
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'swimdpt'
+	end
+	
+	if $ARGS[0] = 'bikinis':
+		menu_off = 0
+		cla
+		gs 'core_library', 'setloc', 'mod_CHshop_selection', 'bikinis'
+		$locclass = 'changingroom'
+		gs 'stat'
+	
+		'<center><b><font color="maroon">Bikinis - one size fits all</font></b></center>'
+		*nl
+	
+	
+		gs 'shop_utils', 'display_clothing_grid_shop'
+	
+		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'swimdpt'
+	end
+
+------------ End of location: "mod_CHshop_selection" ------------
+
