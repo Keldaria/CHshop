@@ -1,5 +1,4 @@
-Version 0.5: Tattoo & Piercing addition
-
+Version 0.6: Update for GL version 9.9
 
 ----INSTALLATION---- 
 Same as any mod for Girl Life, but incase you are unfamiliar
