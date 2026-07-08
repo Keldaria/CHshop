@@ -9,7 +9,7 @@ Location's description:
 	$mod_info[0] = 'CHshop'
 	!0=mod name, saved to $mod_name[i] array
 	
-	$mod_info[1] = '00500'
+	$mod_info[1] = '00600'
 	!1=mod version
 	!this will be displayed as version 1.2, fix3.
 	!if you input 40500, will be showen as version 4.5
@@ -41,7 +41,7 @@ Location's description:
 
 	
 	*clr & cla
-	'<b>Version 0.5: Tattoo & Piercings Addition</b>'
+	'<b>Version 0.6: Update for GL version 9.9</b>'
 	*nl
 	act 'Return': gt 'mod_setting'
 	
@@ -53,26 +53,17 @@ Location: "mod_CHshop"
 Location's description:
 
 	if func('homes_properties', 'is_current_home', $curloc) and $locclass = 'bedr' and cheatVars['cheatsp'] = 1:
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_selection'', ''start''">Clothes Shop</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''start''">Cosmetic Tattoo Shop</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_piercing'', ''start''">Tattoo & Piercings</a> MOD</b>'	
+		act 'Look at a catalogue': $shopreturn = $menu_loc & $shoparg = $menu_arg & gt 'mod_CHshop_options', 'start'
 	end
 	
 	! This is a temporary fix because the University Dorm does not have a bedr location class
 	if $loc = 'uni_dorm' and $curloc = 'uni_dorm' and $loc_arg = 'dorm_room' and cheatVars['cheatsp'] = 1:
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_selection'', ''start''">Clothes Shop</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''start''">Cosmetic Tattoo Shop</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_piercing'', ''start''">Tattoo & Piercings</a> MOD</b>'
+		act 'Look at a catalogue': $shopreturn = $menu_loc & $shoparg = $menu_arg & gt 'mod_CHshop_options', 'start'
 	end
 	
 	! This is a temporary fix because the therapist hotel room does not have a bedr location class
 	if $loc = 'HotelRoom' and $curloc = 'HotelRoom' and $loc_arg = 'therapist' and cheatVars['cheatsp'] = 1:
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_selection'', ''start''">Clothes Shop</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''start''">Cosmetic Tattoo Shop</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_cosmetic'', ''electrolysis''">Electrolysis Clinic</a> MOD</b>'
-		'<b> MOD <a href = "exec: $shopreturn = $menu_loc & $shoparg = $menu_arg & gt ''mod_CHshop_piercing'', ''start''">Tattoo & Piercings</a> MOD</b>'
+		act 'Look at a catalogue': $shopreturn = $menu_loc & $shoparg = $menu_arg & gt 'mod_CHshop_options', 'start'
 	end
 	
 	if $ARGS[0] = 'permanent':
@@ -82,6 +73,20 @@ Location's description:
 	end
 
 ------------ End of location: "mod_CHshop" ------------
+
+Location: "mod_CHshop_options"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Location's description:
+
+	if $ARGS[0] = 'start':
+		act 'Stop looking at the Catalogue': $menu_loc = $shopreturn & $menu_arg = $shoparg & killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+		act 'Clothing Section': gt 'mod_CHshop_selection', 'start'
+		act 'Cosmetic Tattoo Section': gt 'mod_CHshop_cosmetic', 'start'
+		act 'Electrolysis Section': gt 'mod_CHshop_cosmetic', 'electrolysis'
+		act 'Tattoo & Piercings Section': gt 'mod_CHshop_piercing', 'start'
+	end
+
+------------ End of location: "mod_CHshop_options" ------------
 
 Location: "mod_CHshop_piercing"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,9 +112,7 @@ Location's description:
 	
 		act 'Leave':
 			gs 'mod_CHshop_piercing', 'count'
-			$menu_loc = $shopreturn
-			$menu_arg = $shoparg
-			killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+			gt 'mod_CHshop_options', 'start'
 		end
 		
 		if pcs_tattoos['total'] > 0:	act 'Remove all tattoos':		gs 'tattoo_management', 'full_reset'		& gt 'mod_CHshop_piercing', 'start'
@@ -326,11 +329,13 @@ Location's description:
 			gs 'pain', 1, 'ears', 'pierce'
 		end
 	
-		if shop_display['init'] = 0:
-			gs 'shop_utils', 'init_display', 'ears', 'shop'
+		if func('shop_utils', 'is_init') = 0:
+			gs 'shop_utils', 'init', 'start', 'piercings', 'shop'
+				gs 'shop_utils', 'init', 'add_type', 'ears'
+			gs 'shop_utils', 'init', 'end'
 		end
 	
-		gs 'shop_utils', 'display_piercings_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
 	end
@@ -348,11 +353,13 @@ Location's description:
 			gs 'pain', 1, 'nose', 'pierce'
 		end
 	
-		if shop_display['init'] = 0:
-			gs 'shop_utils', 'init_display', 'nose', 'shop'
+		if func('shop_utils', 'is_init') = 0:
+			gs 'shop_utils', 'init', 'start', 'piercings', 'shop'
+				gs 'shop_utils', 'init', 'add_type', 'nose'
+			gs 'shop_utils', 'init', 'end'
 		end
 	
-		gs 'shop_utils', 'display_piercings_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
 	end
@@ -370,11 +377,13 @@ Location's description:
 			gs 'pain', 1, 'eyebrows', 'pierce'
 		end
 	
-		if shop_display['init'] = 0:
-			gs 'shop_utils', 'init_display', 'brow', 'shop'
+		if func('shop_utils', 'is_init') = 0:
+			gs 'shop_utils', 'init', 'start', 'piercings', 'shop'
+				gs 'shop_utils', 'init', 'add_type', 'brow'
+			gs 'shop_utils', 'init', 'end'
 		end
 	
-		gs 'shop_utils', 'display_piercings_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
 	end
@@ -392,11 +401,13 @@ Location's description:
 			gs 'pain', 1, 'lips', 'pierce'
 		end
 	
-		if shop_display['init'] = 0:
-			gs 'shop_utils', 'init_display', 'lip', 'shop'
+		if func('shop_utils', 'is_init') = 0:
+			gs 'shop_utils', 'init', 'start', 'piercings', 'shop'
+				gs 'shop_utils', 'init', 'add_type', 'lip'
+			gs 'shop_utils', 'init', 'end'
 		end
 	
-		gs 'shop_utils', 'display_piercings_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
 	end
@@ -414,11 +425,13 @@ Location's description:
 			gs 'pain', 1, 'tongue', 'pierce'
 		end
 	
-		if shop_display['init'] = 0:
-			gs 'shop_utils', 'init_display', 'tongue', 'shop'
+		if func('shop_utils', 'is_init') = 0:
+			gs 'shop_utils', 'init', 'start', 'piercings', 'shop'
+				gs 'shop_utils', 'init', 'add_type', 'tongue'
+			gs 'shop_utils', 'init', 'end'
 		end
 	
-		gs 'shop_utils', 'display_piercings_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
 	end
@@ -436,11 +449,13 @@ Location's description:
 			gs 'pain', 1, 'tummy', 'pierce'
 		end
 	
-		if shop_display['init'] = 0:
-			gs 'shop_utils', 'init_display', 'navel', 'shop'
+		if func('shop_utils', 'is_init') = 0:
+			gs 'shop_utils', 'init', 'start', 'piercings', 'shop'
+				gs 'shop_utils', 'init', 'add_type', 'navel'
+			gs 'shop_utils', 'init', 'end'
 		end
 	
-		gs 'shop_utils', 'display_piercings_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
 	end
@@ -458,11 +473,13 @@ Location's description:
 			gs 'pain', 1, 'nipples', 'pierce'
 		end
 	
-		if shop_display['init'] = 0:
-			gs 'shop_utils', 'init_display', 'nipples', 'shop'
+		if func('shop_utils', 'is_init') = 0:
+			gs 'shop_utils', 'init', 'start', 'piercings', 'shop'
+				gs 'shop_utils', 'init', 'add_type', 'nipples'
+			gs 'shop_utils', 'init', 'end'
 		end
 	
-		gs 'shop_utils', 'display_piercings_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
 	end
@@ -480,11 +497,13 @@ Location's description:
 			gs 'pain', 1, 'pubic', 'pierce'
 		end
 	
-		if shop_display['init'] = 0:
-			gs 'shop_utils', 'init_display', 'pussy', 'shop'
+		if func('shop_utils', 'is_init') = 0:
+			gs 'shop_utils', 'init', 'start', 'piercings', 'shop'
+				gs 'shop_utils', 'init', 'add_type', 'pussy'
+			gs 'shop_utils', 'init', 'end'
 		end
 	
-		gs 'shop_utils', 'display_piercings_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': killvar 'salon_temp_state' & gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
 	end
@@ -508,11 +527,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''ankle_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'ankle', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'ankle'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -529,11 +550,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''arm_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'arm', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'arm'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -550,11 +573,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''ass_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'ass', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'ass'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -571,11 +596,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''back_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'back', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'back'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -592,11 +619,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''belly_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'belly', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'belly'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -613,11 +642,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''breast_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'breast', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'breast'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -634,11 +665,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''chest_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'chest', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'chest'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -655,11 +688,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''face_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'face', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'face'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -676,11 +711,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''hand_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'hand', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'hand'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -697,11 +734,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''leg_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'leg', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'leg'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -718,11 +757,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''lip_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'lip', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'lip'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -739,11 +780,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''neck_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'neck', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'neck'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -760,11 +803,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''pussy_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'pussy', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'pussy'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -781,11 +826,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''shoulder_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'shoulder', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'shoulder'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -802,11 +849,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''side_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'side', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'side'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -823,11 +872,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''tramp_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'tramp', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'tramp'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -844,11 +895,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''under_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'under', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'under'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -865,11 +918,13 @@ Location's description:
 			'<center><img <<$set_imgh>> src="<<$func(''tattoo_management'', ''wrist_image'')>>"></center>'
 			'You already have this tattoo here.'
 		else
-			if shop_display['init'] = 0:
-				gs 'shop_utils', 'init_display', 'wrist', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'tattoos', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'wrist'
+				gs 'shop_utils', 'init', 'end'
 			end
 	
-			gs 'shop_utils', 'display_tattoos_grid_shop'
+			gs 'shop_utils', 'display', 'grid_shop'
 		end
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_piercing', 'start'
@@ -889,9 +944,7 @@ Location's description:
 		'<br>Currently there are five levels of cosmetic tattoos: light, vibrant, sultry, professional and celebrity.<br>Please keep in mind that these procedures are permanent.<br>Also, be aware that after procedure using regular cosmetics will be difficult.</b>'
 	
 		act 'Return':
-			$menu_loc = $shopreturn
-			$menu_arg = $shoparg
-			killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+			gt 'mod_CHshop_options', 'start'
 		end
 		if cosmetic_tattoo > 0:
 			act 'Remove cosmetic tattoo':
@@ -944,9 +997,7 @@ Location's description:
 		'<br>Electrolysis - laser hair removal of legs and pubic area.</b>'
 	
 		act 'Return':
-			$menu_loc = $shopreturn
-			$menu_arg = $shoparg
-			killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+			gt 'mod_CHshop_options', 'start'
 		end
 		if lashair < 1:
 			act 'Proceed with laser hair removal':
@@ -957,9 +1008,7 @@ Location's description:
 			act 'I want to grow hair again':
 				killvar 'lashair'
 				gs 'stat'
-				$menu_loc = $shopreturn
-				$menu_arg = $shoparg
-				killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+				gt 'mod_CHshop_options', 'start'
 			end
 		end
 	end
@@ -977,7 +1026,7 @@ Location's description:
 			'<center><img <<$set_imgh>> src="images/locations/city/residential/clinic/electrolysis.jpg"></center>'
 			'You strip completely and lie down on the table. Over the next few hours, you''re treated by a laser over and over again. When the treatment is finished and you get up from the table, your skin feels silky smooth.'
 	
-			act 'Continue': $menu_loc = $shopreturn & $menu_arg = $shoparg & killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+			act 'Continue': gt 'mod_CHshop_options', 'start'
 	end
 
 ------------ End of location: "mod_CHshop_cosmetic" ------------
@@ -1000,9 +1049,7 @@ Location's description:
 	
 		act 'Leave the store':
 			$shoplocation = ''
-			$menu_loc = $shopreturn
-			$menu_arg = $shoparg
-			killvar '$shopreturn' & killvar '$shoparg' & gt $menu_loc, $menu_arg
+			gt 'mod_CHshop_options', 'start'
 			end
 		end
 		act 'Visit dress department':
@@ -1054,51 +1101,100 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Coco dresses':
-			gs 'shop_utils', 'init_display', 'coco_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'coco_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Bomba dresses':
-			gs 'shop_utils', 'init_display', 'bomba_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'bomba_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Erotic fetish dresses':
-			gs 'shop_utils', 'init_display', 'eroto_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'eroto_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Exhibitionist dresses':
-			gs 'shop_utils', 'init_display', 'salacious_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'salacious_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Fashionista dresses':
-			gs 'shop_utils', 'init_display', 'fashionista_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'fashionista_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Flamingo dresses':
-			gs 'shop_utils', 'init_display', 'flamingos_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'flamingos_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View GM dresses':
-			gs 'shop_utils', 'init_display', 'gm_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Moncheri dresses':
-			gs 'shop_utils', 'init_display', 'moncheri_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'moncheri_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Moncheri gowns':
-			gs 'shop_utils', 'init_display', 'moncheri_gown', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'moncheri_gown'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Patchwork dresses':
-			gs 'shop_utils', 'init_display', 'dolls_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'dolls_dress'
+					gs 'shop_utils', 'init', 'set_discount', anushkaQW['discount']
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Pussycat dresses':
-			gs 'shop_utils', 'init_display', 'cats_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'cats_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 		act 'View Scandalicious dresses':
-			gs 'shop_utils', 'init_display', 'scandalicious_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'scandalicious_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'dresses'
 		end
 	end
@@ -1110,51 +1206,100 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Bomba outfits':
-			gs 'shop_utils', 'init_display', 'bomba_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'bomba_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Burlesque clothing':
-			gs 'shop_utils', 'init_display', 'fancy_burlesque', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'fancy_burlesque'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Coco outfits':
-			gs 'shop_utils', 'init_display', 'coco_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'coco_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Erotic fetish outfits':
-			gs 'shop_utils', 'init_display', 'eroto_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'eroto_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Exhibitionist outfits':
-			gs 'shop_utils', 'init_display', 'salacious_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'salacious_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Fashionista outfits':
-			gs 'shop_utils', 'init_display', 'fashionista_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'fashionista_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Flamingo clothing':
-			gs 'shop_utils', 'init_display', 'flamingos_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'flamingos_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View GM clothing':
-			gs 'shop_utils', 'init_display', 'gm_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Nerdvana outfits':
-			gs 'shop_utils', 'init_display', 'nerdvana_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'nerdvana_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Patchwork outfits':
-			gs 'shop_utils', 'init_display', 'dolls_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'dolls_outfits'
+					gs 'shop_utils', 'init', 'set_discount', anushkaQW['discount']
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Pussycat outfits':
-			gs 'shop_utils', 'init_display', 'cats_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'cats_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 		act 'View Scandalicious clothing':
-			gs 'shop_utils', 'init_display', 'scandalicious_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'scandalicious_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clothes'
 		end
 	end
@@ -1166,35 +1311,67 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Danilovich sports clothing':
-			gs 'shop_utils', 'init_display', 'danilovich_outfits', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'danilovich_outfits'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'clo'
 		end
 		act 'View GM office wear':
-			gs 'shop_utils', 'init_display', 'gm_office', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm_office'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'office'
 		end
 		act 'View GM maid outfits':
-			gs 'shop_utils', 'init_display', 'gm_maid', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm_maid'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'gm_maid'
 		end
 		act 'View GM server uniforms':
-			gs 'shop_utils', 'init_display', 'gm_server', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm_server'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'gm_server'
 		end
 		act 'View GM school uniforms':
-			gs 'shop_utils', 'init_display', 'gm_school', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm_school'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'school'
 		end
 		act 'View Nerdvana cosplay outfits':
-			gs 'shop_utils', 'init_display', 'nerdvana_cosplay', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'nerdvana_cosplay'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'cosplay'
 		end
 		act 'View Pregnancy clothes':
-			gs 'shop_utils', 'init_display', 'materinstvo_dress', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'materinstvo_dress'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'mater'
 		end
 		act 'View Erotic stripper clothing':
-			gs 'shop_utils', 'init_display', 'eroto_strip', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'eroto_strip'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'strip'
 		end
 	end
@@ -1206,31 +1383,60 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Danilovich sports panties':
-			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'panties', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'danilovich'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'panties'
 		end
 		act 'View Erotic panties':
-			gs 'shop_utils', 'init_display', 'eroto', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'panties', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'eroto'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'panties'
 		end
 		act 'View Exhibitionist panties':
-			gs 'shop_utils', 'init_display', 'salacious', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'panties', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'salacious'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'panties'
 		end
 		act 'View Fashionista panties':
-			gs 'shop_utils', 'init_display', 'fashionista', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'panties', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'fashionista'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'panties'
 		end
 		act 'View GM panties':
-			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'panties', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'panties'
 		end
 		act 'View Lusso panties':
-			gs 'shop_utils', 'init_display', 'lusso', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'panties', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'lusso'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'panties'
 		end
 		act 'View Pussycat panties':
 			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'panties', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'panties'
 		end
 	end
@@ -1242,31 +1448,59 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Danilovich sports bras':
-			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bras', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'danilovich'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bras'
 		end
 		act 'View Erotic bras':
-			gs 'shop_utils', 'init_display', 'eroto', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bras', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'eroto'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bras'
 		end
 		act 'View Exhibitionist bras':
-			gs 'shop_utils', 'init_display', 'salacious', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bras', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'salacious'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bras'
 		end
 		act 'View Fashionista bras':
-			gs 'shop_utils', 'init_display', 'fashionista', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bras', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'fashionista'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bras'
 		end
 		act 'View GM bras':
-			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bras', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bras'
 		end
 		act 'View Lusso bras':
-			gs 'shop_utils', 'init_display', 'lusso', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bras', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'lusso'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bras'
 		end
 		act 'View Pussycat bras':
-			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bras', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'cats'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bras'
 		end
 	end
@@ -1278,19 +1512,35 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Exhibitionist bodysuits':
-			gs 'shop_utils', 'init_display', 'salacious', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bodysuits', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'salacious'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bodysuit'
 		end
 		act 'View Lusso bodysuits':
-			gs 'shop_utils', 'init_display', 'lusso', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bodysuits', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'lusso'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bodysuit'
 		end
 		act 'View Moncheri bodysuits':
-			gs 'shop_utils', 'init_display', 'moncheri', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bodysuits', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'moncheri'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bodysuit'
 		end
 		act 'View Scandalicious bodysuits':
-			gs 'shop_utils', 'init_display', 'scandalicious', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'bodysuits', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'scandalicious'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bodysuit'
 		end
 	end
@@ -1302,31 +1552,59 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Allure swimsuits':
-			gs 'shop_utils', 'init_display', 'allure_swimsuit', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'allure_swimsuit'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'swim'
 		end
 		act 'View Allure bikinis':
-			gs 'shop_utils', 'init_display', 'allure_bikinis', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'allure_bikinis'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bikinis'
 		end
 		act 'View Danilovich swimwear':
-			gs 'shop_utils', 'init_display', 'danilovich_swimsuit', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'danilovich_swimsuit'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'swim'
 		end
 		act 'View Nerdvana swimsuits':
-			gs 'shop_utils', 'init_display', 'nerdvana_swimsuit', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'nerdvana_swimsuit'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'swim'
 		end
 		act 'View Nerdvana bikinis':
-			gs 'shop_utils', 'init_display', 'nerdvana_bikinis', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'nerdvana_bikinis'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bikinis'
 		end
 		act 'View Scandalicious swimsuits':
-			gs 'shop_utils', 'init_display', 'scandalicious_swimsuit', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'scandalicious_swimsuit'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'swim'
 		end
 		act 'View Scandalicious bikinis':
-			gs 'shop_utils', 'init_display', 'scandalicious_bikinis', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'clothing', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'scandalicious_bikinis'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'bikinis'
 		end
 	end
@@ -1338,35 +1616,68 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Danilovich exercise shoes':
-			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'shoes', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'danilovich'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'shoes'
 		end
 		act 'View Erotic fetish shoes':
-			gs 'shop_utils', 'init_display', 'eroto', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'shoes', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'eroto'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'shoes'
 		end
 		act 'View GM shoes':
-			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'shoes', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'shoes'
 		end
 		act 'View Moncheri shoes':
-			gs 'shop_utils', 'init_display', 'moncheri', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'shoes', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'moncheri'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'shoes'
 		end
 		act 'View Scandalicious shoes':
-			gs 'shop_utils', 'init_display', 'scandalicious', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'shoes', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'scandalicious'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'shoes'
 		end
 		act 'View Patchwork shoes':
-			gs 'shop_utils', 'init_display', 'dolls', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'shoes', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'dolls'
+					gs 'shop_utils', 'init', 'set_discount', anushkaQW['discount']
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'shoes'
 		end
 		act 'View Pussycat shoes':
-			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'shoes', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'cats'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'shoes'
 		end
 		act 'View Bomba shoes':
-			gs 'shop_utils', 'init_display', 'bomba', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'shoes', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'bomba'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'shoes'
 		end
 	end
@@ -1378,27 +1689,52 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Bomba coats':
-			gs 'shop_utils', 'init_display', 'bomba', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'coats', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'bomba'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'coats'
 		end
 		act 'View Danilovich coats':
-			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'coats', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'danilovich'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'coats'
 		end
 		act 'View GM coats':
-			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'coats', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'coats'
 		end
 		act 'View Moncheri coats':
-			gs 'shop_utils', 'init_display', 'moncheri', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'coats', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'moncheri'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'coats'
 		end
 		act 'View Patchwork coats':
-			gs 'shop_utils', 'init_display', 'dolls', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'coats', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'dolls'
+					gs 'shop_utils', 'init', 'set_discount', anushkaQW['discount']
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'coats'
 		end
 		act 'View Pussycat coats':
-			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'coats', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'cats'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'coats'
 		end
 	end
@@ -1410,43 +1746,84 @@ Location's description:
 		act 'Return': gt 'mod_CHshop_selection', 'start'
 	
 		act 'View Bomba purses':
-			gs 'shop_utils', 'init_display', 'bomba', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'bomba'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 		act 'View Coco purses':
-			gs 'shop_utils', 'init_display', 'coco', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'coco'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 		act 'View Danilovich purses':
-			gs 'shop_utils', 'init_display', 'danilovich', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'danilovich'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 		act 'View Fashionista purses':
-			gs 'shop_utils', 'init_display', 'fashionista', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'fashionista'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 		act 'View Flamingo purses':
-			gs 'shop_utils', 'init_display', 'flamingos', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'flamingos'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 		act 'View GM purses':
-			gs 'shop_utils', 'init_display', 'gm', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'gm'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 		act 'View Moncheri purses':
-			gs 'shop_utils', 'init_display', 'moncheri', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'moncheri',
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 		act 'View Nerdvana purses':
-			gs 'shop_utils', 'init_display', 'nerdvana', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'nerdvana'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 		act 'View Patchwork purses':
-			gs 'shop_utils', 'init_display', 'dolls', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'dolls'
+					gs 'shop_utils', 'init', 'set_discount', anushkaQW['discount']
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 		act 'View Pussycat purses':
-			gs 'shop_utils', 'init_display', 'cats', 'shop'
+			if func('shop_utils', 'is_init') = 0:
+				gs 'shop_utils', 'init', 'start', 'purses', 'shop'
+					gs 'shop_utils', 'init', 'add_type', 'cats'
+				gs 'shop_utils', 'init', 'end'
+			end
 			gt 'mod_CHshop_selection', 'purses'
 		end
 	end
@@ -1462,7 +1839,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing outfits</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'clothesdpt'
 	end
@@ -1477,7 +1854,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing dresses</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'dressdpt'
 	end
@@ -1492,7 +1869,7 @@ Location's description:
 		'<center><b><font color="maroon">Sportswear - one size fits all</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
 	end
@@ -1507,7 +1884,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing office clothing</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
 	end
@@ -1522,7 +1899,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing maid outfits</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
 	end
@@ -1537,7 +1914,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing server uniforms</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
 	end
@@ -1552,7 +1929,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing school uniforms</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
 	end
@@ -1567,7 +1944,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing Cosplay Outfits</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
 	end
@@ -1582,7 +1959,7 @@ Location's description:
 		'<center><b><font color="maroon">Stripper clothing - for work or the bedroom</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
 	end
@@ -1598,7 +1975,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing materunity clothing</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'specdpt'
 	end
@@ -1613,7 +1990,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing shoes</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_shoes_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'shoedpt'
 	end
@@ -1628,7 +2005,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing coats</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_coats_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'coatdpt'
 	end
@@ -1643,7 +2020,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing purses</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_purses_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'pursedpt'
 	end
@@ -1657,7 +2034,7 @@ Location's description:
 	
 		'<center><b><font color="maroon">Viewing panties</font></b></center>'
 	
-		gs 'shop_utils', 'display_panties_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'pantydpt'
 	end
@@ -1672,7 +2049,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing bras</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_bras_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'bradpt'
 	end
@@ -1687,7 +2064,7 @@ Location's description:
 		'<center><b><font color="maroon">Viewing bodysuits</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_bodysuits_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'bodysuitdpt'
 	end
@@ -1702,7 +2079,7 @@ Location's description:
 		'<center><b><font color="maroon">Swimsuits - one size fits all</font></b></center>'
 		*nl
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'swimdpt'
 	end
@@ -1718,7 +2095,7 @@ Location's description:
 		*nl
 	
 	
-		gs 'shop_utils', 'display_clothing_grid_shop'
+		gs 'shop_utils', 'display', 'grid_shop'
 	
 		act 'Return': gs 'shop_utils', 'cleanup' & gt 'mod_CHshop_selection', 'swimdpt'
 	end
