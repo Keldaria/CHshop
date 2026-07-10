@@ -1,4 +1,4 @@
-Version 0.6: Update for GL version 9.9
+Version 0.7: Update for GL version 9.9 (Currently the DEV Build)
 
 ----INSTALLATION---- 
 Same as any mod for Girl Life, but incase you are unfamiliar
